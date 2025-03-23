@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # Get API key from environment variable
-api_key = os.environ.get("SAMBANOVA_API_KEY")
+api_key = st.secrets["SAMBANOVA_APIKEY"]
 if not api_key:
     st.error("SambaNova API key not found in environment variables. Please set the SAMBANOVA_API_KEY environment variable.")
     st.stop()

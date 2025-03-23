@@ -15,7 +15,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# Get API key from environment variable
 api_key = st.secrets["SAMBANOVA_APIKEY"]
 if not api_key:
     st.error("SambaNova API key not found in environment variables. Please set the SAMBANOVA_API_KEY environment variable.")
@@ -38,6 +37,31 @@ st.subheader("Powered by SambaNova Cloud API")
 # Sidebar for model parameters
 with st.sidebar:
     st.header("Configuration")
+    
+    # Edit system prompt section (visible even after chat has started)
+    if st.session_state.chat_started:
+        st.subheader("System Prompt")
+        new_system_prompt = st.text_area(
+            "Edit System Prompt",
+            value=st.session_state.system_prompt,
+            height=150,
+            help="Edit the behavior and capabilities of the AI."
+        )
+        
+        # Button to update system prompt and restart chat
+        if st.button("Update System Prompt", type="secondary"):
+            # Keep only user messages (remove system and assistant messages)
+            user_messages = [msg for msg in st.session_state.messages if msg["role"] == "user"]
+            
+            # Reset messages and add new system prompt
+            st.session_state.messages = [{"role": "system", "content": new_system_prompt}]
+            st.session_state.system_prompt = new_system_prompt
+            
+            # Add back user messages to maintain conversation history
+            st.session_state.messages.extend(user_messages)
+            
+            st.success("System prompt updated! Assistant responses will follow the new instructions.")
+            st.rerun()
     
     # Model parameters
     st.subheader("Model Parameters")
